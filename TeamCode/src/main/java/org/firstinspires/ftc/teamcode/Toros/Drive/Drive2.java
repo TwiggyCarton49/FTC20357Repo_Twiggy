@@ -254,7 +254,7 @@ public class Drive2 extends LinearOpMode {
 //        Claw2.setDirection(Servo.Direction.REVERSE);
 //        Claw1.setPosition(0);
 //        Claw2.setPosition(0);
-        volt_prime = hardwareMap.get(VoltageSensor.class, "Voltsense");
+        volt_prime = hardwareMap.get(VoltageSensor.class, "Control Hub");
 //        Claw3.setPosition(0);
 
     }
