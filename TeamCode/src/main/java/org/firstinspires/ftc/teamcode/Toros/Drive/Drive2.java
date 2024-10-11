@@ -15,6 +15,7 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
  * FEATURE TO DO LIST
  * (For the future of what the coding team needs to add)
  *
+ * Hard Limit forward and back
  *
  *
  */
@@ -50,12 +51,12 @@ public class Drive2 extends LinearOpMode {
     private DcMotor BackLeftMotor;
     private DcMotor FrontRightMotor;
     private DcMotor BackRightMotor;
-//    private DcMotorEx Arm1;
-//
-//    //Servos
-//    private Servo Claw1;
-//    private Servo Claw2;
-//    private Servo Claw3;
+    private DcMotor ArmPivot1;
+    private DcMotor ArmPivot2;
+    private DcMotor Arm;
+    private DcMotor ArmFinal;
+    private Servo Claw1;
+
 
     double speed = 100;
     //Variable above is used for controlling the speed of our drivetrain
@@ -146,16 +147,11 @@ public class Drive2 extends LinearOpMode {
                 //Speed tuning if you want to be slow
 
 
-//                //Servo Control
-//                Claw1.setPosition((gamepad2.right_stick_y * 180));
-//                Claw2.setPosition((gamepad2.right_stick_y * 180));
-//                Claw3.setPosition(gamepad2.left_stick_x * 0.5);
+                //Servo Control
+                Claw1.setPosition((gamepad2.right_stick_y * 180));
+
 //                Arm1.setPower(gamepad2.left_stick_y);
-//
-//                if (gamepad2.left_bumper) {
-//                    Claw3.setPosition(180);
-//                } else if (gamepad2.right_bumper) {
-//                    Claw3.setPosition(0);
+
                 } if (gamepad1.dpad_down) {
                     speed -= 2;
                 } else if (gamepad1.dpad_up) {
@@ -237,12 +233,10 @@ public class Drive2 extends LinearOpMode {
         BackLeftMotor = hardwareMap.get(DcMotor.class, "BackLeftMotor");
         FrontRightMotor = hardwareMap.get(DcMotor.class, "FrontRightMotor");
         BackRightMotor = hardwareMap.get(DcMotor.class, "BackRightMotor");
-        ///Arm1 = hardwareMap.get(DcMotorEx.class, "Arm");
-//        //Servos
-//        Claw1 = hardwareMap.get(Servo.class, "Claw1");
-//        Claw2 = hardwareMap.get(Servo.class, "Claw2");
-//        Claw3 = hardwareMap.get(Servo.class, "Claw3");
-        //Reversal of Motors
+
+
+        Claw1 = hardwareMap.get(Servo.class, "Claw1");
+
         FrontRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         BackRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         //Zero Power Behaviors
@@ -251,21 +245,20 @@ public class Drive2 extends LinearOpMode {
         FrontRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         BackRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         //More servo stuff
-//        Claw2.setDirection(Servo.Direction.REVERSE);
-//        Claw1.setPosition(0);
-//        Claw2.setPosition(0);
-        volt_prime = hardwareMap.get(VoltageSensor.class, "Control Hub");
-//        Claw3.setPosition(0);
 
+        Claw1.setPosition(0);
+        Arm = hardwareMap.get(DcMotor.class, "Arm");
+        ArmPivot1 = hardwareMap.get(DcMotor.class,"Pivot1");
+        ArmPivot2 = hardwareMap.get(DcMotor.class, "Pivot2");
+        ArmFinal = hardwareMap.get(DcMotor.class, "Final");
+        volt_prime = hardwareMap.get(VoltageSensor.class, "Control Hub");
     }
 
 
     private void initTelemetry() {
-//        telemetry.addData("claw angle", Claw1.getPosition() * 180);
-//        telemetry.addData("claw open or closed", Claw3.getPosition());
-//        //
-//        //
-//        //
+        telemetry.addData("claw angle", Claw1.getPosition() * 180);
+
+
 //        telemetry.addData("Target", target);
 //        telemetry.addData("ArmPosition", Arm1.getCurrentPosition());
 //        telemetry.addData("Pos", Arm1.getCurrentPosition());
