@@ -28,21 +28,21 @@ public class DriveFieldCentric extends LinearOpMode {
         double x = gamepad1.left_stick_x;
         double rx = gamepad1.right_stick_x;
 
-        FrontLeftMotor = hardwareMap.get(DcMotor.class, "FrontLeftMotor");
-        BackLeftMotor = hardwareMap.get(DcMotor.class, "BackLeftMotor");
-        FrontRightMotor = hardwareMap.get(DcMotor.class, "FrontRightMotor");
-        BackRightMotor = hardwareMap.get(DcMotor.class, "BackRightMotor");
+        FrontLeftMotor = hardwareMap.get(DcMotor.class, "m1");
+        BackLeftMotor = hardwareMap.get(DcMotor.class, "m3");
+        FrontRightMotor = hardwareMap.get(DcMotor.class, "m2");
+        BackRightMotor = hardwareMap.get(DcMotor.class, "m4");
         FrontLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         BackLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         FrontRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         BackRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        FrontRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-//        BackRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        FrontRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        BackRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         imu = hardwareMap.get(IMU.class, "imu2");
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
-                RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
-                RevHubOrientationOnRobot.UsbFacingDirection.UP
+                RevHubOrientationOnRobot.LogoFacingDirection.UP,
+                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD
         ));
 
         imu.initialize(parameters);

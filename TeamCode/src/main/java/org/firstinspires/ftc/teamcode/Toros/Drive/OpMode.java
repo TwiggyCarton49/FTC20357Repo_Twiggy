@@ -18,16 +18,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
         private DcMotor Motor3;
         private DcMotor Motor4;
 
-        // Variable for moving the motors corresponding to axises on gamepad sticks
-        //Speed
-        double vertical = -gamepad1.left_stick_y;
-        double pivot = gamepad1.left_stick_x * 1.1;
-        double horizontal = gamepad1.right_stick_x;
-        //denominator here is a list containing the absolute value of each direction as a maximum value for the motors to go when calculating the power
-        double denominator = Math.max(Math.abs(vertical) + Math.abs(horizontal) + Math.abs(pivot),1);
-
-
-
         @Override
         public void runOpMode() throws InterruptedException {
             Motor1 = hardwareMap.get(DcMotor.class, "Motor1");
@@ -37,6 +27,14 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
             waitForStart();
             if(opModeIsActive()){
+                // Variable for moving the motors corresponding to axises on gamepad sticks
+                //Speed
+                double vertical = -gamepad1.left_stick_y;
+                double pivot = gamepad1.left_stick_x * 1.1;
+                double horizontal = gamepad1.right_stick_x;
+                //denominator here is a list containing the absolute value of each direction as a maximum value for the motors to go when calculating the power
+                double denominator = Math.max(Math.abs(vertical) + Math.abs(horizontal) + Math.abs(pivot),1);
+
                 while (opModeIsActive()){
                     // sets motor power
                     Motor1.setPower((vertical + horizontal + pivot)/denominator);

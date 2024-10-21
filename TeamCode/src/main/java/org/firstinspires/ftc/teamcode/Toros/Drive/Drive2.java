@@ -215,7 +215,7 @@ public class Drive2 extends LinearOpMode {
                 if(volts > 12.00){
                     battery = 100;
                 } else if (volts <= 12) {
-                    battery = volts / 12.00 * 100;
+                    battery = (volts / 12.00) * 100;
                 }
                 
                 telemetry.addData("Battery%",battery);
@@ -229,10 +229,10 @@ public class Drive2 extends LinearOpMode {
 
     private void initHardware(){
         //Motors
-        FrontLeftMotor = hardwareMap.get(DcMotor.class, "FrontLeftMotor");
-        BackLeftMotor = hardwareMap.get(DcMotor.class, "BackLeftMotor");
-        FrontRightMotor = hardwareMap.get(DcMotor.class, "FrontRightMotor");
-        BackRightMotor = hardwareMap.get(DcMotor.class, "BackRightMotor");
+        FrontLeftMotor = hardwareMap.get(DcMotor.class, "m1");
+        BackLeftMotor = hardwareMap.get(DcMotor.class, "m2");
+        FrontRightMotor = hardwareMap.get(DcMotor.class, "m3");
+        BackRightMotor = hardwareMap.get(DcMotor.class, "m4");
 
 
         Claw1 = hardwareMap.get(Servo.class, "Claw1");

@@ -1,12 +1,13 @@
 package org.firstinspires.ftc.robotcontroller.external.samples;
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-@TeleOp(name = "MainDrive")
+@Disabled
 //Our Class for Drive Controlled period of the game
 public class DriveSample extends LinearOpMode {
 

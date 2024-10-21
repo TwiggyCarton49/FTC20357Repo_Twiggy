@@ -19,8 +19,12 @@ public class armTester extends LinearOpMode {
 
         if(opModeIsActive()){
             while (opModeIsActive()){
-                double armY = gamepad2.left_stick_y;
-                double armP = gamepad1.left_stick_x;
+                double elevatorControl = gamepad2.left_stick_y;
+                double pivotControl = gamepad2.left_stick_x;
+
+                elevator.setPower(elevatorControl);
+                armPivot1.setPower(pivotControl);
+                armPivot2.setPower(pivotControl);
 
                 BatteryClass battery = new BatteryClass(hardwareMap);
                 telemetry.addData("Battery", battery.getBatteryPercent());
