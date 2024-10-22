@@ -13,7 +13,6 @@ public class armTester extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         armPivot1 = hardwareMap.get(DcMotorEx.class, "pivot1");
-        armPivot2 = hardwareMap.get(DcMotorEx.class, "pivot2");
         elevator = hardwareMap.get(DcMotorEx.class, "elev");
         finalStage = hardwareMap.get(DcMotorEx.class, "final");
 
@@ -24,7 +23,6 @@ public class armTester extends LinearOpMode {
 
                 elevator.setPower(elevatorControl);
                 armPivot1.setPower(pivotControl);
-                armPivot2.setPower(pivotControl);
 
                 BatteryClass battery = new BatteryClass(hardwareMap);
                 telemetry.addData("Battery", battery.getBatteryPercent());

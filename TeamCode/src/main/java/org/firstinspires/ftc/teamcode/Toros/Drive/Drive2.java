@@ -52,8 +52,7 @@ public class Drive2 extends LinearOpMode {
     private DcMotor FrontRightMotor;
     private DcMotor BackRightMotor;
     private DcMotor ArmPivot1;
-    private DcMotor ArmPivot2;
-    private DcMotor Arm;
+    private DcMotor Elevator;
     private DcMotor ArmFinal;
     private Servo Claw1;
 
@@ -209,6 +208,13 @@ public class Drive2 extends LinearOpMode {
 //                    target =-3250;
 //                }
 
+            //basic arm control
+            double elevator = gamepad2.left_stick_y;
+            double pivot = gamepad2.left_stick_x;
+
+            Elevator.setPower(elevator);
+            ArmPivot1.setPower(pivot);
+
                 ///Battery power
                 double volts = volt_prime.getVoltage();
                 double battery = 0;
@@ -247,10 +253,12 @@ public class Drive2 extends LinearOpMode {
         //More servo stuff
 
         Claw1.setPosition(0);
-        Arm = hardwareMap.get(DcMotor.class, "Arm");
         ArmPivot1 = hardwareMap.get(DcMotor.class,"Pivot1");
-        ArmPivot2 = hardwareMap.get(DcMotor.class, "Pivot2");
-        ArmFinal = hardwareMap.get(DcMotor.class, "Final");
+        Elevator = hardwareMap.get(DcMotor.class, "elevator");
+
+        ArmPivot1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        Elevator.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         volt_prime = hardwareMap.get(VoltageSensor.class, "Control Hub");
     }
 
