@@ -22,6 +22,7 @@ public class AutoScrim1 extends LinearOpMode{
             //power motors
             //go right
             runMotors(1,-1,-1,1,1000);
+            runMotors(1,-1,-1,1,1000);
 
 
     }
