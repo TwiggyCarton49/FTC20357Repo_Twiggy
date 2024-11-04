@@ -93,8 +93,8 @@ public class Drive2 extends LinearOpMode {
                  * (Other controls work in progress as the season goes on)
                  */
 
-                double x = gamepad1.left_stick_x;
-                double y = -gamepad1.left_stick_y;
+                double y = gamepad1.left_stick_x;
+                double x = -gamepad1.left_stick_y;
                 double turn = gamepad1.right_stick_x;
 
                 //Drive variables used in the calculations to run our motors

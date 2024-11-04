@@ -20,7 +20,23 @@ public class autoTest {
                 .build();
 
         myFirstBot.runAction(myFirstBot.getDrive().actionBuilder(new Pose2d(24, -61, Math.toRadians(90)))
-                        .strafeTo(new Vector2d(60,-61))
+                        .strafeTo(new Vector2d(0,-52))
+                        .waitSeconds(1)
+                        .strafeTo(new Vector2d(8,-33))
+                        .waitSeconds(1)
+                        .strafeTo(new Vector2d(48,-37))
+                        .waitSeconds(1)
+                        .strafeToLinearHeading(new Vector2d(51,-62), Math.toRadians(270))
+                        .waitSeconds(1)
+                        .strafeToLinearHeading(new Vector2d(58,-37), Math.toRadians(90))
+                        .waitSeconds(1)
+                        .strafeToLinearHeading(new Vector2d(53,-62), Math.toRadians(270))
+                        .waitSeconds(1)
+                        .strafeToLinearHeading(new Vector2d(58,-25), Math.toRadians(0))
+                        .waitSeconds(1)
+                        .strafeToLinearHeading(new Vector2d(60,-62), Math.toRadians(270))
+
+
 
                 .build());
 
