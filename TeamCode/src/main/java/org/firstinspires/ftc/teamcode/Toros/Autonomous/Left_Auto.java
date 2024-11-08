@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.RR.MecanumDrive;
+import java.util.Objects;
 
 @Autonomous(name = "Left_Side_Auto")
 
@@ -129,7 +130,7 @@ public class Left_Auto extends LinearOpMode {
         Elevator2.setTargetPosition(Elevator2.getCurrentPosition() + extend);
 
         //Add zero power for rest pos? BRAKE OR FLOAT??????
-        return null;
+        return Objects::nonNull;
     }
 
     private Action Claw(boolean sample) {
@@ -138,6 +139,6 @@ public class Left_Auto extends LinearOpMode {
         } else {
             Claw1.setPosition(0);
         }
-        return null;
+        return Objects::nonNull;
     }
 }
