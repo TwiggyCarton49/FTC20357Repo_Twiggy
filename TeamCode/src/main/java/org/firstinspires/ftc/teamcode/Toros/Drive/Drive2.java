@@ -46,14 +46,14 @@ public class Drive2 extends LinearOpMode {
     //This the ticks that the Tetrix motor does in degrees (dividing by 180) which is part of the PIDF Calculation
 
     //Declares the Variables for all of our motors and servos
-    private DcMotor FrontLeftMotor;
     private VoltageSensor volt_prime;
+    private DcMotor FrontLeftMotor;
     private DcMotor BackLeftMotor;
     private DcMotor FrontRightMotor;
     private DcMotor BackRightMotor;
     private DcMotor ArmPivot1;
     private DcMotor Elevator;
-    private DcMotor ArmFinal;
+    private DcMotor Elevator2;
     private Servo Claw1;
 
 
