@@ -21,17 +21,16 @@ public class AutoScrim1 extends LinearOpMode{
         waitForStart();
             //power motors
             //go right
-            runMotors(1,-1,-1,1,1000);
-            runMotors(1,-1,-1,1,1000);
+            runMotors(1,-1,-1,1,1200);
 
 
     }
     private void initHardware(){
         //Motors
-        FrontLeftMotor = hardwareMap.get(DcMotor.class, "FrontLeftMotor");
-        BackLeftMotor = hardwareMap.get(DcMotor.class, "BackLeftMotor");
-        FrontRightMotor = hardwareMap.get(DcMotor.class, "FrontRightMotor");
-        BackRightMotor = hardwareMap.get(DcMotor.class, "BackRightMotor");
+        FrontLeftMotor = hardwareMap.get(DcMotor.class, "m1");
+        BackLeftMotor = hardwareMap.get(DcMotor.class, "m3");
+        FrontRightMotor = hardwareMap.get(DcMotor.class, "m2");
+        BackRightMotor = hardwareMap.get(DcMotor.class, "m4");
         FrontRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         BackRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         FrontLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -43,8 +42,8 @@ public class AutoScrim1 extends LinearOpMode{
     private void runMotors(int p1, int p2, int p3, int p4, int sleepTime){
         FrontLeftMotor.setPower(p1);
         FrontRightMotor.setPower(p2);
-        BackLeftMotor.setPower(p3);
-        BackRightMotor.setPower(p4);
+        BackLeftMotor.setPower(p3*0.75);
+        BackRightMotor.setPower(p4*0.75);
         sleep(sleepTime);
     }
 }
