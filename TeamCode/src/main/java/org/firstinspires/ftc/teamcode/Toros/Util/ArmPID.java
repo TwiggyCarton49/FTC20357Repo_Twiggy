@@ -17,26 +17,33 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 @TeleOp
 public class ArmPID extends LinearOpMode {
     private PIDController controller;
+    private PIDController controller2;
 
 
 
-    public static double p1 = 0, i1 = 0, d1 = 0;
+    public static double p1 = -0.04, i1 = 0.001, d1 = 0.0005;
 
-    public static double f1 = 0;
+    public static double f1 = 0.185;
 
-    public static int target1 = 5;
+    public static int target1 = 250;
+    public static double p2 = 0.0, i2 = 0.0, d2 = 0.0;
+
+    public static double f2 = 0;
+
+    public static int target2 = 250;
 
     private final double ticks_in_degrees = 1440/180;
     private DcMotorEx ArmPivot1;
+    private DcMotorEx Joint2;
 
     @Override
     public void runOpMode() throws InterruptedException {
         controller = new PIDController(p1,i1,d1);
-
+        controller2 = new PIDController(p2,i2,d2);
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        ArmPivot1 = hardwareMap.get(DcMotorEx.class,"pivot1");
-
+        ArmPivot1 = hardwareMap.get(DcMotorEx.class,"elev");
+        Joint2 = hardwareMap.get(DcMotorEx.class,"elev2");
 
         waitForStart();
         while (opModeIsActive()){
@@ -51,6 +58,8 @@ public class ArmPID extends LinearOpMode {
 
             telemetry.addData("Pos", armPos);
             telemetry.addData("Target", target1);
+//
+
 
             telemetry.update();
 

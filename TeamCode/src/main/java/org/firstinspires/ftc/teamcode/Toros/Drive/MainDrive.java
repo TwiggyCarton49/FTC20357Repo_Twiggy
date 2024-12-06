@@ -3,9 +3,6 @@ package org.firstinspires.ftc.teamcode.Toros.Drive;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.controller.PIDController;
-import com.arcrobotics.ftclib.gamepad.ButtonReader;
-import com.arcrobotics.ftclib.gamepad.GamepadKeys;
-import com.arcrobotics.ftclib.gamepad.ToggleButtonReader;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -14,7 +11,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
-import com.arcrobotics.ftclib.gamepad.GamepadEx;
+
+import org.firstinspires.ftc.teamcode.Toros.Util.BatteryClass;
 
 /**
  * FEATURE TO DO LIST
@@ -27,7 +25,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 
 @TeleOp(name = "MainDrive")
 //Our Class for Drive Controlled period of the game
-public class Drive2 extends LinearOpMode {
+public class MainDrive extends LinearOpMode {
 
     /**
      * [PIDF controller] PIDF is a closed loop control which takes a proportional, integral, and derivative terms to calculate the error
@@ -52,21 +50,17 @@ public class Drive2 extends LinearOpMode {
     //This the ticks that the Tetrix motor does in degrees (dividing by 180) which is part of the PIDF Calculation
 
     //Declares the Variables for all of our motors and servos
-    private DcMotor fowardMotor;
+    private DcMotor extensionMotor;
     private DcMotor FrontLeftMotor;
     private VoltageSensor volt_prime;
-    private DcMotor elevator, elevator2;
+    private DcMotor joint1, joint2;
     private DcMotor BackLeftMotor;
     private DcMotor FrontRightMotor;
     private DcMotor BackRightMotor;
-    private DcMotor Elevator;
-    private DcMotor Arm2;
+
     boolean Xtoggle = false;
     boolean Rtoggle = false;
     private Servo Claw1;
-
-
-    double speed = 100;
     Gamepad currentGamepad = new Gamepad();
     Gamepad previousGamepad = new Gamepad();
     //Variable above is used for controlling the speed of our drivetrain
@@ -184,13 +178,13 @@ public class Drive2 extends LinearOpMode {
 
         private void initHardware () {
             //Motors
-            FrontLeftMotor = hardwareMap.get(DcMotor.class, "m1");
-            BackLeftMotor = hardwareMap.get(DcMotor.class, "m3");
-            FrontRightMotor = hardwareMap.get(DcMotor.class, "m2");
-            BackRightMotor = hardwareMap.get(DcMotor.class, "m4");
-            elevator = hardwareMap.get(DcMotorEx.class, "elev");
-            elevator2 = hardwareMap.get(DcMotorEx.class, "elev2");
-            fowardMotor = hardwareMap.get(DcMotor.class,"foward");
+            FrontLeftMotor = hardwareMap.get(DcMotor.class, "fl");
+            BackLeftMotor = hardwareMap.get(DcMotor.class, "br");
+            FrontRightMotor = hardwareMap.get(DcMotor.class, "fr");
+            BackRightMotor = hardwareMap.get(DcMotor.class, "br");
+            joint1 = hardwareMap.get(DcMotorEx.class, "joint1");
+            joint2 = hardwareMap.get(DcMotorEx.class, "joint2");
+            extensionMotor = hardwareMap.get(DcMotor.class,"extend");
 
             Claw1 = hardwareMap.get(Servo.class, "claw");
 
@@ -205,11 +199,7 @@ public class Drive2 extends LinearOpMode {
             //More servo stuff
 
             Claw1.setPosition(0);
-            Elevator = hardwareMap.get(DcMotor.class, "elev");
-            Arm2 = hardwareMap.get(DcMotor.class, "elev2");
-            //fowardMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            Arm2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            Elevator.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
 
             volt_prime = hardwareMap.get(VoltageSensor.class, "Control Hub");
         }
@@ -219,8 +209,11 @@ public class Drive2 extends LinearOpMode {
 
 
 //        telemetry.addData("Target", target);
-            telemetry.addData("ArmPosition", Elevator.getCurrentPosition());
-            telemetry.addData("Pos", fowardMotor.getCurrentPosition());
+            BatteryClass battery = new BatteryClass(hardwareMap);
+            telemetry.addData("Battery", battery.getBatteryPercent());
+            telemetry.addData("Joint 1 pos", joint1.getCurrentPosition());
+            telemetry.addData("Joint 2 pos", joint2.getCurrentPosition());
+            telemetry.addData("extension pos", extensionMotor.getCurrentPosition());
             telemetry.addData("Toggle",Xtoggle);
             telemetry.addData("Toggle",Rtoggle);
             telemetry.update();
@@ -315,25 +308,25 @@ public class Drive2 extends LinearOpMode {
 
         }
         private void arm() {
-            int SlidePos = fowardMotor.getCurrentPosition();
+            int SlidePos = extensionMotor.getCurrentPosition();
             double elevatorControl = gamepad2.left_stick_y;
             double arm2 = gamepad2.right_stick_y;
 
-            elevator.setPower(elevatorControl / 2);
-            Arm2.setPower(arm2 / 2);
+            joint1.setPower(elevatorControl / 2);
+            joint2.setPower(arm2 / 2);
             if(gamepad2.a){
                 if(SlidePos >= 2650)
-                fowardMotor.setPower(0);
+                extensionMotor.setPower(0);
                 else{
-                    fowardMotor.setPower(-1);
+                    extensionMotor.setPower(-1);
 
                 }
-            }
+            }   
             if(gamepad2.b){
                 if(SlidePos <= 2090)
-                    fowardMotor.setPower(0);
+                    extensionMotor.setPower(0);
                 else{
-                    fowardMotor.setPower(1);
+                    extensionMotor.setPower(1);
 
                 }            }
         }
