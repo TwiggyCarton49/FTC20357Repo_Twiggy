@@ -32,9 +32,12 @@ public class MainDrive extends LinearOpMode {
      * as a difference of a target and will correct based on the terms.We use this to have precise control of our arm for our intake.
      **/
     private PIDController controller;
+    private PIDController controller2;
     //
-    public static double p = 0.03, i = 0.0022, d = 0.001;
-    public static double f = -0.05;
+    public static double p = 0.004, i = 0.001, d = 0.0005;
+    public static double f = 0.195;
+    public static double p2 = 0.004, i2 = 0.001, d2 = 0.0005;
+    public static double f2 = 0.185;
     //
 //    /**
 //     P is for proportional which will be proportionate to the error this causes the arm to go up for us
@@ -45,7 +48,8 @@ public class MainDrive extends LinearOpMode {
 //     PID equation  https://images.squarespace-cdn.com/content/v1/5230e9f8e4b06ab69d1d8068/1598232682278-PAUNGGGYUP19WS8C7TWN/PID+equation.png?format=1000w
 //     Can't write it here because it is too big and has an integral
 //     */
-    public static int target = -100;
+    public static int target = 50;
+    public static int target2 = 450;
     private final double ticks_in_degrees = 1440 / 180;
     //This the ticks that the Tetrix motor does in degrees (dividing by 180) which is part of the PIDF Calculation
 
@@ -179,7 +183,7 @@ public class MainDrive extends LinearOpMode {
         private void initHardware () {
             //Motors
             FrontLeftMotor = hardwareMap.get(DcMotor.class, "fl");
-            BackLeftMotor = hardwareMap.get(DcMotor.class, "br");
+            BackLeftMotor = hardwareMap.get(DcMotor.class, "bl");
             FrontRightMotor = hardwareMap.get(DcMotor.class, "fr");
             BackRightMotor = hardwareMap.get(DcMotor.class, "br");
             joint1 = hardwareMap.get(DcMotorEx.class, "joint1");
@@ -187,6 +191,7 @@ public class MainDrive extends LinearOpMode {
             extensionMotor = hardwareMap.get(DcMotor.class,"extend");
 
             Claw1 = hardwareMap.get(Servo.class, "claw");
+            Claw1.setPosition(1);
 
 
             FrontRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -198,7 +203,7 @@ public class MainDrive extends LinearOpMode {
             BackRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             //More servo stuff
 
-            Claw1.setPosition(0);
+            Claw1.setPosition(1);
 
 
             volt_prime = hardwareMap.get(VoltageSensor.class, "Control Hub");
@@ -308,17 +313,81 @@ public class MainDrive extends LinearOpMode {
 
         }
         private void arm() {
+            controller = new PIDController(p,i,d);
             int SlidePos = extensionMotor.getCurrentPosition();
-            double elevatorControl = gamepad2.left_stick_y;
-            double arm2 = gamepad2.right_stick_y;
+//            double elevatorControl = gamepad2.left_stick_y;
+            double arm2 = gamepad2.left_stick_y;
+//            if (target > -2100){
+//                  f =  0.05;
+//                } else if (target < -2100) {
+//                    f = -0.05;
+//                }
+                /*Allows for our robot to hold the position of the arm when passing a certain point by
+                multiplying the f value by -1 which allows for the arm to be perfectly stable no matter if it is behind or in front of the robot
+                */
 
-            joint1.setPower(elevatorControl / 2);
-            joint2.setPower(arm2 / 2);
+             //Useful for later
+                double powerA = 0;
+                int armPos = joint1.getCurrentPosition();
+                if(joint1.getCurrentPosition() < -950){
+                    target = -950;
+                }
+
+
+//                //Now the fun begins
+                controller.setPID(p, i, d); // sets the terms
+                double pid = controller.calculate(armPos, target); /// Remember that very funny equation for PID. Well I told the computer to do my math homework
+                double ff = Math.cos(Math.toRadians(target / ticks_in_degrees)) * f; // Creates a number to get an angle related to the target and ticks and muliplies by our f term
+                powerA = pid + ff; // Gives the power to the motor
+                // This below is a fun little statement that when the stick is not equal to 0 and is either below 1 or above -1 will give power to the arm divided by 2
+
+               if(gamepad2.right_stick_y <= 1.0 && gamepad2.right_stick_y != 0.0|| gamepad2.right_stick_y >= -1.0 && gamepad2.right_stick_y != 0){
+                    powerA = gamepad2.right_stick_y * 0.5;
+                    target = armPos;
+                }
+
+                // Arm power
+               joint1.setPower(powerA);
+
+            controller2 = new PIDController(p2,i2,d2);
+             int target2 = joint2.getCurrentPosition();
+//            if (target > -2100){
+//                  f =  0.05;
+//                } else if (target < -2100) {
+//                    f = -0.05;
+//                }
+                /*Allows for our robot to hold the position of the arm when passing a certain point by
+                multiplying the f value by -1 which allows for the arm to be perfectly stable no matter if it is behind or in front of the robot
+                */
+
+            //Useful for later
+            double powerA2 = 0;
+            int armPos2 = joint2.getCurrentPosition();
+            
+
+//                //Now the fun begins
+            controller2.setPID(p2, i2, d2); // sets the terms
+            double pid2 = controller2.calculate(armPos2, target2); /// Remember that very funny equation for PID. Well I told the computer to do my math homework
+            double ff2 = Math.cos(Math.toRadians(target2 / ticks_in_degrees)) * f2; // Creates a number to get an angle related to the target and ticks and muliplies by our f term
+            powerA2 = pid2 + ff2; // Gives the power to the motor
+            // This below is a fun little statement that when the stick is not equal to 0 and is either below 1 or above -1 will give power to the arm divided by 2
+
+            if(gamepad2.left_stick_y <= 1.0 && gamepad2.left_stick_y != 0.0|| gamepad2.left_stick_y >= -1.0 && gamepad2.left_stick_y != 0){
+                powerA2 = gamepad2.left_stick_y * 0.5;
+                target2 = armPos2;
+            }
+
+            // Arm power
+            joint2.setPower(powerA2);
+
+//            joint1.setPower(elevatorControl / 2);
+
+
             if(gamepad2.a){
                 if(SlidePos >= 2650)
                 extensionMotor.setPower(0);
                 else{
-                    extensionMotor.setPower(-1);
+                    extensionMotor.setPower(-0.5);
 
                 }
             }   
@@ -326,9 +395,11 @@ public class MainDrive extends LinearOpMode {
                 if(SlidePos <= 2090)
                     extensionMotor.setPower(0);
                 else{
-                    extensionMotor.setPower(1);
+                    extensionMotor.setPower(0.5);
 
-                }            }
+                }
+            }
+
         }
         private void claw(){
             if (gamepad2.left_bumper) {

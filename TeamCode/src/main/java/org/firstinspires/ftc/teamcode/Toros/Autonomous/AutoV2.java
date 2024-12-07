@@ -28,17 +28,19 @@ public class AutoV2 extends LinearOpMode {
         public Claw (HardwareMap hardwareMap){
             claw = hardwareMap.get(Servo.class, "Claw");
         }
+
         public class closeClaw implements Action{
+
             @Override
             public boolean run (@NonNull TelemetryPacket packet){
-                claw.setPosition(0); //What our close position is
+                claw.setPosition(1); //What our close position is
                 return false;
             }
         }
         public class openClaw implements Action{
             @Override
             public boolean run (@NonNull TelemetryPacket packet){
-                claw.setPosition(1); //What our open position is
+                claw.setPosition(0); //What our open position is
                 return false;
             }
         }
@@ -278,6 +280,8 @@ public class AutoV2 extends LinearOpMode {
                 .strafeTo(new Vector2d(64,-52));
         Action trjEnd = traj.endTrajectory().fresh()
                 .build();
+//        TrajectoryActionBuilder firstTraj = drive.actionBuilder(drive.pose)
+
         waitForStart();
 
         if(isStopRequested()) return;
@@ -289,13 +293,11 @@ public class AutoV2 extends LinearOpMode {
                 new SequentialAction(
                         //action1,
                         claw.ClawOpen(),
-                        claw.ClawClose(),
-                        arm.joint1up(),
-                        arm.joint1down(),
-                        arm.joint1down(),
-                        arm.joint2down(),
-                        arm.slideup(),
-                        arm.slidedown()
+                        claw.ClawClose()
+//                        arm.joint1up(),
+//                        arm.joint1down(),
+//                        arm.joint1down(),
+//                        arm.joint2down()
                         //trjEn
 
                 )

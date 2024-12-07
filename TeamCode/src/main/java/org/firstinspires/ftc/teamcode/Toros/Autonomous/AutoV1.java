@@ -41,7 +41,7 @@ public class AutoV1 extends LinearOpMode{
         initHardware();
         waitForStart();
         //power motors
-        runMotors(1, 1, 1, 1, 1200);
+        runMotors(1, -1, -1, 1, 1200);
         arm(-650, 200);
 
     }
@@ -70,6 +70,8 @@ public class AutoV1 extends LinearOpMode{
         sleep(sleepTime);
     }
     private void arm(int targetPos, int targetPos2){
+        controller = new PIDController(p1,i1,d1);
+        controller2 = new PIDController(p2,i2,d2);
         controller.setPID(p1,i1,d1);
         int armPos = Joint1.getCurrentPosition();
         double pid = controller.calculate(armPos, targetPos);
