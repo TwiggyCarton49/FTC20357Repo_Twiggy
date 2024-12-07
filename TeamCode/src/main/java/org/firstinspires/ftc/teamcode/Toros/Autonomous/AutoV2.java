@@ -269,6 +269,7 @@ public class AutoV2 extends LinearOpMode {
                 .strafeTo(new Vector2d(8,-33))
                 .waitSeconds(1);
         TrajectoryActionBuilder traj = drive.actionBuilder(drive.pose)
+                .lineToY(-40)
                 .setTangent(Math.toRadians(350))
                 .splineToLinearHeading(new Pose2d(48,-10,Math.toRadians(270)),Math.toRadians(270))
                 .strafeTo(new Vector2d(48,-52))
@@ -288,7 +289,7 @@ public class AutoV2 extends LinearOpMode {
 
        Action action1 = sample.build();
         Action action2 = traj.build();
-
+//Parallel Actions?
         Actions.runBlocking(
                 new SequentialAction(
                         //action1,
