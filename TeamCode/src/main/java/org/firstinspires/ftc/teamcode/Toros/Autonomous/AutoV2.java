@@ -26,11 +26,10 @@ public class AutoV2 extends LinearOpMode {
         private Servo claw;
 
         public Claw (HardwareMap hardwareMap){
-            claw = hardwareMap.get(Servo.class, "Claw");
+            claw = hardwareMap.get(Servo.class, "claw");
         }
 
         public class closeClaw implements Action{
-
             @Override
             public boolean run (@NonNull TelemetryPacket packet){
                 claw.setPosition(1); //What our close position is
@@ -291,17 +290,13 @@ public class AutoV2 extends LinearOpMode {
         Action action2 = traj.build();
 //Parallel Actions?
         Actions.runBlocking(
-                new SequentialAction(
-                        //action1,
-                        claw.ClawOpen(),
-                        claw.ClawClose()
-//                        arm.joint1up(),
-//                        arm.joint1down(),
-//                        arm.joint1down(),
-//                        arm.joint2down()
-                        //trjEn
-
-                )
+                drive.actionBuilder(drive.pose)
+                        .stopAndAdd(claw.ClawClose())
+                        .waitSeconds(5)
+                        .stopAndAdd(claw.ClawOpen())
+                        .waitSeconds(3)
+                        .stopAndAdd(arm.joint1up())
+                        .build()
         );
     }
 }

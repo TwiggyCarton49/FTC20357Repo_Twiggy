@@ -37,7 +37,7 @@ public class MainDrive extends LinearOpMode {
     public static double p = 0.004, i = 0.001, d = 0.0005;
     public static double f = 0.195;
     public static double p2 = 0.004, i2 = 0.001, d2 = 0.0005;
-    public static double f2 = 0.185;
+    public static double f2 = 0.2;
     //
 //    /**
 //     P is for proportional which will be proportionate to the error this causes the arm to go up for us
@@ -173,6 +173,7 @@ public class MainDrive extends LinearOpMode {
                 }
 
                 telemetry.addData("Battery%", battery);
+                telemetry.addData("motor power", joint1.getPower());
                 initTelemetry();
                 telemetry.update();
 
