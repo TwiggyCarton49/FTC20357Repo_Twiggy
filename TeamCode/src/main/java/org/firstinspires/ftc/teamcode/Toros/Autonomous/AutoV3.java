@@ -4,8 +4,11 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.InstantAction;
+import com.acmerobotics.roadrunner.InstantFunction;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
@@ -52,9 +55,10 @@ public class AutoV3 extends LinearOpMode {
         }
     }
 
-    public DcMotorEx joint1,joint2,Slide;
+
 
     public class Arm {
+        public DcMotorEx joint1,joint2,Slide;
 
         public Arm(HardwareMap hardwareMap) {
             joint1 = hardwareMap.get(DcMotorEx.class, "joint1");
@@ -71,7 +75,7 @@ public class AutoV3 extends LinearOpMode {
             //private double f1 = 0.185;
 
             private final double ticks_in_degrees = 1440 / 180;
-            public Controller(int p, int i, int d, int f){
+            public Controller(double p, double i, double d, double f){
                 this.p = p;
                 this.i = i;
                 this.d = d;
@@ -88,15 +92,20 @@ public class AutoV3 extends LinearOpMode {
                 return power;
             }
         }
-
-        public class PIDAction implements Action{
-
-
+        public class joint1Up implements InstantFunction{
+            int t;
+            Controller controller = new Controller(0.004,0.001,0.0004,0.185);
+            public joint1Up(int target){
+                this.t = target;
+            }
 
             @Override
-            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-
+            public void run() {
+                joint1.setPower(controller.calc(this.t));
             }
+        }
+        public InstantFunction joint1up(int target){
+            return new joint1Up(target);
         }
     }
 
@@ -133,14 +142,11 @@ public class AutoV3 extends LinearOpMode {
         Action action2 = traj.build();
 //Parallel Actions?
         Actions.runBlocking(
-                drive.actionBuilder(drive.pose)
-                        .stopAndAdd(claw.Open())
-                        .stopAndAdd(arm.joint1up(-500))
-                        .build()
-                );
-        Actions.runBlocking(
                 new ParallelAction(
+                        new InstantAction(arm.joint1up(-500)),
+                    new SequentialAction(
 
+                    )
                 )
         );
 
