@@ -41,6 +41,8 @@ public class DriveSample2 extends LinearOpMode {
                 Motor2.setPower((vertical - horizontal - pivot)/denominator);
                 Motor3.setPower((vertical - horizontal + pivot)/denominator);
                 Motor4.setPower((vertical + horizontal -  pivot)/denominator);
+
+                telemetry.addData("Controller",gamepad1.left_stick_y);
             }
         }
     }

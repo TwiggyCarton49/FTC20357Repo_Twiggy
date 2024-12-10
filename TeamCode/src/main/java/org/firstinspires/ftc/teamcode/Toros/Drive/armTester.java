@@ -9,20 +9,22 @@ import org.firstinspires.ftc.teamcode.Toros.Util.BatteryClass;
 
 @TeleOp(name = "ArmTester")
 public class armTester extends LinearOpMode {
-    private DcMotor armPivot1,armPivot2,elevator,finalStage;
+    private DcMotor joint1, joint2;
     @Override
     public void runOpMode() throws InterruptedException {
-        armPivot1 = hardwareMap.get(DcMotorEx.class, "pivot1");
-        elevator = hardwareMap.get(DcMotorEx.class, "elev");
-        finalStage = hardwareMap.get(DcMotorEx.class, "final");
-
+        joint1 = hardwareMap.get(DcMotorEx.class, "joint1");
+        joint2 = hardwareMap.get(DcMotorEx.class, "joint2");
+//        elevator.setDirection(DcMotorSimple.Direction.REVERSE);
+//        finalStage = hardwareMap.get(DcMotorEx.class, "final");
+        waitForStart();
         if(opModeIsActive()){
             while (opModeIsActive()){
-                double elevatorControl = gamepad2.left_stick_y;
-                double pivotControl = gamepad2.left_stick_x;
+                double joint1Control = gamepad2.left_stick_y;
+                double joint2Control = gamepad2.right_stick_y;
 
-                elevator.setPower(elevatorControl);
-                armPivot1.setPower(pivotControl);
+                joint1.setPower(joint1Control/2);
+                joint2.setPower(joint2Control/2);
+
 
                 BatteryClass battery = new BatteryClass(hardwareMap);
                 telemetry.addData("Battery", battery.getBatteryPercent());

@@ -28,10 +28,10 @@ public class DriveFieldCentric extends LinearOpMode {
         double x = gamepad1.left_stick_x;
         double rx = gamepad1.right_stick_x;
 
-        FrontLeftMotor = hardwareMap.get(DcMotor.class, "m1");
-        BackLeftMotor = hardwareMap.get(DcMotor.class, "m3");
-        FrontRightMotor = hardwareMap.get(DcMotor.class, "m2");
-        BackRightMotor = hardwareMap.get(DcMotor.class, "m4");
+        FrontLeftMotor = hardwareMap.get(DcMotor.class, "fl");
+        BackLeftMotor = hardwareMap.get(DcMotor.class, "bl");
+        FrontRightMotor = hardwareMap.get(DcMotor.class, "fr");
+        BackRightMotor = hardwareMap.get(DcMotor.class, "br");
         FrontLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         BackLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         FrontRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);

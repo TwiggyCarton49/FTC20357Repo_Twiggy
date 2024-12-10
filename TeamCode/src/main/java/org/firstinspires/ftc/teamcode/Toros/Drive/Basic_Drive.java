@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 //main class Opmode
 
-    public class OpMode extends LinearOpMode {
+    public class Basic_Drive extends LinearOpMode {
         /// Decleration of DC motors switch them to the names of what is in you config
         //Same for servos and any other device connected to driver hub
         private DcMotor Motor1;
