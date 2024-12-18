@@ -9,26 +9,30 @@ import org.firstinspires.ftc.teamcode.Toros.Util.BatteryClass;
 
 @TeleOp(name = "ArmTester")
 public class armTester extends LinearOpMode {
-    private DcMotor joint1, joint2;
+    private DcMotor slideLeft, slideRight;
     @Override
     public void runOpMode() throws InterruptedException {
-        joint1 = hardwareMap.get(DcMotorEx.class, "joint1");
-        joint2 = hardwareMap.get(DcMotorEx.class, "joint2");
-//        elevator.setDirection(DcMotorSimple.Direction.REVERSE);
+        slideLeft = hardwareMap.get(DcMotorEx.class, "slideLeft");//left
+        slideRight = hardwareMap.get(DcMotorEx.class, "slideRight");//right
+        slideRight.setDirection(DcMotor.Direction.REVERSE);
 //        finalStage = hardwareMap.get(DcMotorEx.class, "final");
         waitForStart();
         if(opModeIsActive()){
             while (opModeIsActive()){
-                double joint1Control = gamepad2.left_stick_y;
-                double joint2Control = gamepad2.right_stick_y;
+                double slideLeftControl = gamepad2.left_stick_y;
+                double slideRightControl = gamepad2.right_stick_y;
 
-                joint1.setPower(joint1Control/2);
-                joint2.setPower(joint2Control/2);
+                slideLeft.setPower(slideLeftControl);
+                slideRight.setPower(slideRightControl);
 
 
                 BatteryClass battery = new BatteryClass(hardwareMap);
                 telemetry.addData("Battery", battery.getBatteryPercent());
+                telemetry.addData("Slide: Left", slideLeft.getCurrentPosition());
+                telemetry.addData("Slide: Right", slideRight.getCurrentPosition());
+
             }
         }
     }
 }
+//:3

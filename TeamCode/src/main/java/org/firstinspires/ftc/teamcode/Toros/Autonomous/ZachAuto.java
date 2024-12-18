@@ -23,7 +23,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.RR.MecanumDrive;
 
 @Autonomous
-public class AutoV3 extends LinearOpMode {
+public class ZachAuto extends LinearOpMode {
     public int target = -400;
     public class Claw {
         private Servo claw;
@@ -58,12 +58,12 @@ public class AutoV3 extends LinearOpMode {
 
 
     public class Arm {
-        public DcMotorEx joint1,joint2,Slide;
+        public DcMotorEx SlideLeft,SlideRight,MiddleSlide;
 
         public Arm(HardwareMap hardwareMap) {
-            joint1 = hardwareMap.get(DcMotorEx.class, "joint1");
-            joint2 = hardwareMap.get(DcMotorEx.class, "joint2");
-            Slide = hardwareMap.get(DcMotorEx.class, "extend");
+            SlideLeft = hardwareMap.get(DcMotorEx.class, "SlideLeft");
+            SlideRight = hardwareMap.get(DcMotorEx.class, "SlideRight");
+            MiddleSlide = hardwareMap.get(DcMotorEx.class, "MiddleSlide");
         }
 
         public class Controller{
@@ -84,7 +84,7 @@ public class AutoV3 extends LinearOpMode {
             public double calc(int target){
                 controller = new PIDController(this.p, this.i, this.d);
                 controller.setPID(this.p,this.i, this.d);
-                int armPos = joint1.getCurrentPosition();
+                int armPos = SlideLeft.getCurrentPosition();
                 double pid = controller.calculate(armPos, target);
                 double ff = Math.cos(Math.toRadians(target / ticks_in_degrees)) * this.f;
 
@@ -101,7 +101,7 @@ public class AutoV3 extends LinearOpMode {
 
             @Override
             public void run() {
-                joint1.setPower(controller.calc(this.t));
+                SlideLeft.setPower(controller.calc(this.t));
             }
         }
         public InstantFunction joint1up(int target){
@@ -150,7 +150,7 @@ public class AutoV3 extends LinearOpMode {
                 .strafeTo(new Vector2d(40, -55))
                 //pick up spec 5
                 .strafeTo(new Vector2d(-2, -35))
-        //Hang spec 5
+                //Hang spec 5
 //--------------------------------------------------------------------------------------------------
 
                 .strafeTo(new Vector2d(39, -58));//park
@@ -169,15 +169,16 @@ public class AutoV3 extends LinearOpMode {
         Actions.runBlocking(
                 new ParallelAction(
                         new InstantAction(arm.joint1up(-500)),
-                    new SequentialAction(
+                        new SequentialAction(
 
-                    )
+                        )
                 )
         );
 
 
     }
 }
+
 
 
 
