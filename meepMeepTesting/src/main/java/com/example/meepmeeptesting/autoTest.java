@@ -43,7 +43,7 @@ public class autoTest {
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-        RightBot1.runAction(RightBot1.getDrive().actionBuilder(new Pose2d(9, -61, Math.toRadians(90)))
+        RightBot1.runAction(RightBot1.getDrive().actionBuilder(new Pose2d(9, -61, Math.toRadians(90)))//What most people do
 
                 .strafeTo(new Vector2d(8, -36))
                 //Hang Spec 1
@@ -131,27 +131,27 @@ public class autoTest {
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
         RightBot3.runAction(RightBot3.getDrive().actionBuilder(new Pose2d(9, -61, Math.toRadians(90)))//newest iteration of spec auto
-                .strafeTo(new Vector2d(8, -36))
+                .strafeTo(new Vector2d(9, -35))
                 //Hang Spec 1
                 //.strafeTo(new Vector2d(8,-40))
                 .strafeTo(new Vector2d(30, -38))
                 //.strafeTo(new Vector2d(40, -12))
                 .splineToConstantHeading(new Vector2d(41,-12), Math.toRadians(0))
-                .strafeTo(new Vector2d(46, -55))//push spec 3
+                .strafeTo(new Vector2d(46, -60))//push spec 3
                 //pick up spec 2
-                .strafeTo(new Vector2d(0, -35))
+                .strafeTo(new Vector2d(2, -35))
                 //Hang spec 2
                 .strafeTo(new Vector2d(20,-38))
-                .splineToConstantHeading(new Vector2d(55,-14), Math.toRadians(270))
-                .strafeTo(new Vector2d(55, -55))//push spec 4
+                .splineToConstantHeading(new Vector2d(55,-15), Math.toRadians(270))
+                .strafeTo(new Vector2d(55, -60))//push spec 4
                 //pick up spec 3
-                .strafeTo(new Vector2d(5, -35))
+                .strafeTo(new Vector2d(0, -35))
                 //Hang spec 3
                 .strafeTo(new Vector2d(20,-38))
-                .splineToConstantHeading(new Vector2d(62,-14), Math.toRadians(270))
-                .strafeTo(new Vector2d(62, -55))//push spec 5
+                .splineToConstantHeading(new Vector2d(62,-15), Math.toRadians(270))
+                .strafeTo(new Vector2d(62, -60))//push spec 5
                 //Pick up spec 4
-                .strafeTo(new Vector2d(0, -35))
+                .strafeTo(new Vector2d(-3, -35))
                 //Hang spec 4
 
                 //END 4 sample Auto!!!!!!!
@@ -160,9 +160,10 @@ public class autoTest {
                 //Optional 5 Spec Auto
                 //.strafeTo(new Vector2d(40, -50))
                 //.strafeTo(new Vector2d(40, -55))
-                .splineToConstantHeading(new Vector2d(40,-60), Math.toRadians(270))
+                //.strafeTo(new Vector2d(25,-37))
+                //.splineToConstantHeading(new Vector2d(40,-60), Math.toRadians(270))
                 //pick up spec 5
-                .strafeTo(new Vector2d(-2, -35))
+                //.strafeTo(new Vector2d(5, -35))
                 //Hang spec 5
 
 //--------------------------------------------------------------------------------------------------
@@ -231,9 +232,10 @@ public class autoTest {
                 .setBackgroundAlpha(0.95f)
                 // Add both of our declared bot entities
 
-                .addEntity(RightBot1)
+                //.addEntity(RightBot1)//what most people do
                 //.addEntity(RightBot2)
-                .addEntity(RightBot3)
+                .addEntity(RightBot3)//our newest iteration
+
                 //.addEntity(LeftBot1)
                 //.addEntity(LeftBot2)
 
