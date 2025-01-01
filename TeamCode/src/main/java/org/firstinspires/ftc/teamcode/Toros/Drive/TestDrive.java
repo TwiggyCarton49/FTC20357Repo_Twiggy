@@ -1,5 +1,5 @@
 package org.firstinspires.ftc.teamcode.Toros.Drive;
-import com.qualcomm.robotcore.hardware.Gamepad;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.controller.PIDController;
@@ -8,57 +8,60 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
+import org.firstinspires.ftc.teamcode.Toros.Util.ArmClass;
 import org.firstinspires.ftc.teamcode.Toros.Util.BatteryClass;
 
-
-
-@TeleOp(name = "MainDrive")
-//Our Class for Drive Controlled period of the game
-public class MainDrive extends LinearOpMode {
+@TeleOp(name = "TestDrive")
+public class TestDrive extends LinearOpMode {
 
     /**
      * [PIDF controller] PIDF is a closed loop control which takes a proportional, integral, and derivative terms to calculate the error
      * as a difference of a target and will correct based on the terms.We use this to have precise control of our arm for our intake.
      **/
+
     private PIDController controller;
     private boolean Rtoggle,Xtoggle;
     //
     public static double p = 0.004, i = 0.001, d = 0.0005;
     public static double f = 0.195;
-//    /**
+
 //     P is for proportional which will be proportionate to the error this causes the arm to go up for us
 //     I is for integral which integrates past values of error seeking to reduced the residual error by adding control and eliminate the error which gets us closer to the target point
 //     D is for derivative which best estimates the trend of the error based on the rate of change to reduced the effect to dampen it to not overshoot
 //     F is for feedforward which accounts for things more external and prevents disturbances in our use case showing gravity who is boss
 
     public static int target = 50;
-    private final double ticks_in_degrees = 1440 / 180;// Ticks of the tetrix 60:1 motor divided by 180
-
-    private DcMotor FrontLeftMotor, BackLeftMotor,FrontRightMotor,BackRightMotor,joint1;
+    private final double ticks_in_degrees = 1440 / 180; // Ticks of the tetrix 60:1 motor in degrees (divided by 180)
+    //Declares the Variables for all of our motors and servos
+    private DcMotor FrontLeftMotor,BackLeftMotor,FrontRightMotor,BackRightMotor, joint1; //Motors
     private VoltageSensor volt_prime;
     private Servo fingers,wrist,elbow;
-    Gamepad currentGamepad = new Gamepad(),previousGamepad = new Gamepad();
+    Gamepad currentGamepad1 = new Gamepad(), previousGamepad1 = new Gamepad(); //Gamepads used to make toggles
 
     @Override
     public void runOpMode() throws InterruptedException {
-//        controller = new PIDController(p, i, d); // <- Hey PID you should know what that is
+//        controller = new PIDController(p, i, d);
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        //Initializing Hardware in method down below called initHardware();
+        //Initializing Hardware in method down below
         initHardware();
+
+        ArmClass arm = new ArmClass(hardwareMap);
 
         waitForStart();
 
         if (opModeIsActive()) {
             while (opModeIsActive()) {
-                previousGamepad.copy(currentGamepad);
-                currentGamepad.copy(gamepad1);
+                previousGamepad1.copy(currentGamepad1);
+                currentGamepad1.copy(gamepad1);
 
                 drive();
-                arm();
+                arm.runPivot();
+                arm.runSlides();
                 claw();
 
                 ///Battery power
@@ -80,6 +83,7 @@ public class MainDrive extends LinearOpMode {
     }
 
         private void initHardware () {
+
             //Motors
             FrontLeftMotor = hardwareMap.get(DcMotor.class, "fl");
             BackLeftMotor = hardwareMap.get(DcMotor.class, "bl");
@@ -98,10 +102,9 @@ public class MainDrive extends LinearOpMode {
             BackLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             FrontRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             BackRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            //More servo stuff
+
             volt_prime = hardwareMap.get(VoltageSensor.class, "Control Hub");
         }
-
 
         private void initTelemetry () {
 
@@ -116,12 +119,17 @@ public class MainDrive extends LinearOpMode {
         private void drive () throws InterruptedException {
 
 
-            if(currentGamepad.x && !previousGamepad.x){
+            if(currentGamepad1.x && !previousGamepad1.x){
                 Xtoggle = !Xtoggle;
             }
-            if(currentGamepad.b && !previousGamepad.b){
+            if(currentGamepad1.b && !previousGamepad1.b){
                 Rtoggle = !Rtoggle;
             }
+
+
+
+
+
 
             double x = gamepad1.left_stick_x;
             double y = -gamepad1.left_stick_y;
@@ -139,6 +147,8 @@ public class MainDrive extends LinearOpMode {
             else{
                 turn*=1;
             }
+
+
 
 
             //Drive variables used in the calculations to run our motors
@@ -189,34 +199,8 @@ public class MainDrive extends LinearOpMode {
             BackLeftMotor.setPower(bl);
             BackRightMotor.setPower(br);
         }
-        private void arm() {
-            controller = new PIDController(p,i,d);
-            double arm2 = gamepad2.left_stick_y;
-
-                double powerA = 0;
-                int armPos = joint1.getCurrentPosition();
-                if(joint1.getCurrentPosition() < -950){
-                    target = -950;
-                }
-
-
-
-                controller.setPID(p, i, d); // sets the terms
-                double pid = controller.calculate(armPos, target); /// Remember that very funny equation for PID. Well I told the computer to do my math homework
-                double ff = Math.cos(Math.toRadians(target / ticks_in_degrees)) * f;
-                powerA = pid + ff;
-
-
-               if(gamepad2.right_stick_y <= 1.0 && gamepad2.right_stick_y != 0.0|| gamepad2.right_stick_y >= -1.0 && gamepad2.right_stick_y != 0){
-                    powerA = gamepad2.right_stick_y * 0.5;
-                    target = armPos;
-                }
-
-               joint1.setPower(powerA);
-
-        }
         private void claw(){
-            fingers.setPosition(gamepad2.right_trigger);
+
         }
     }
 
