@@ -27,11 +27,16 @@ public class clawTest extends LinearOpMode {
         initHardware();
 
         waitForStart();
+        if (opModeIsActive()) {
+            while (opModeIsActive()) {
 
 
-        telemetry.addData("motor power", fingers.getPosition());
-        initTelemetry();
-        telemetry.update();
+                claw();
+
+                initTelemetry();
+                telemetry.update();
+            }
+        }
     }
 
 
@@ -62,6 +67,18 @@ public class clawTest extends LinearOpMode {
             fingers.setPosition(0);
         } else if (gamepad2.right_bumper) {
             fingers.setPosition(1);
+        }
+
+        if (gamepad2.b) {
+            wrist.setPosition(0);
+        } else if (gamepad2.x) {
+            wrist.setPosition(1);
+        }
+
+        if (gamepad2.a) {
+            elbow.setPosition(1);
+        } else if (gamepad2.y) {
+            elbow.setPosition(0);
         }
 
 
