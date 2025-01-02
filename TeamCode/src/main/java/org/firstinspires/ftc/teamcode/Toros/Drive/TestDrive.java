@@ -24,7 +24,7 @@ public class TestDrive extends LinearOpMode {
      **/
 
     private PIDController controller;
-    private boolean Rtoggle,Xtoggle;
+    private boolean Rtoggle,Xtoggle,directControl;
     //
     public static double p = 0.004, i = 0.001, d = 0.0005;
     public static double f = 0.195;
@@ -41,7 +41,7 @@ public class TestDrive extends LinearOpMode {
     private VoltageSensor volt_prime;
     private Servo fingers,wrist,elbow;
     Gamepad currentGamepad1 = new Gamepad(), previousGamepad1 = new Gamepad(); //Gamepads used to make toggles
-
+    Gamepad currentGamepad2 = new Gamepad(), previousGamepad2 = new Gamepad();
     @Override
     public void runOpMode() throws InterruptedException {
 //        controller = new PIDController(p, i, d);
@@ -201,7 +201,75 @@ public class TestDrive extends LinearOpMode {
         }
         private void claw(){
 
+
+            if(currentGamepad2.a && !previousGamepad2.a){
+                directControl = !directControl;
+            }
+
+
+
+            if(directControl){
+                if (gamepad2.left_bumper) {
+                    fingers.setPosition(0);
+                } else if (gamepad2.right_bumper) {
+                    fingers.setPosition(1);
+                }//keep finger control always
+
+                if (gamepad2.b) {
+                    wrist.setPosition(0);
+                } else if (gamepad2.x) {
+                    wrist.setPosition(1);
+                } else if (gamepad2.y) {
+                    wrist.setPosition(0.5);
+
+                }
+
+                if (gamepad2.dpad_down) {
+                    elbow.setPosition(1);
+                } else if (gamepad2.dpad_up) {
+                    elbow.setPosition(0);
+                }
+
+            }
+            else {
+                //Set Positions---------------------------------------------------------------------------------
+
+                //Specimens
+                if (gamepad2.dpad_right) {
+                    fingers.setPosition(1);
+                    wrist.setPosition(0);
+                    //arm.runSlides(0);
+                    //arm.runPivot(0);
+                    fingers.setPosition(0);
+                    elbow.setPosition(1);
+                } else if (gamepad2.dpad_left) {
+                    fingers.setPosition(1);
+                    elbow.setPosition(0.5);
+                    wrist.setPosition(1);
+                    //arm.runSlides(500);
+                    //arm.runPivot(500);
+                }
+                //Samples
+                if (gamepad2.b) {
+                    fingers.setPosition(1);
+                    wrist.setPosition(0);
+                    fingers.setPosition(0);
+                    //arm.runSlides(0);
+                    //arm.runPivot(1000);
+                    elbow.setPosition(0.3);
+                } else if (gamepad2.x){
+                    fingers.setPosition(1);
+                    elbow.setPosition(0.5);
+                    wrist.setPosition(0);
+                    //arm.runPivot(500);
+                    //arm.runSlides(1000);
+                }
+            }
+
+
+
         }
-    }
+        }
+
 
 //:3
