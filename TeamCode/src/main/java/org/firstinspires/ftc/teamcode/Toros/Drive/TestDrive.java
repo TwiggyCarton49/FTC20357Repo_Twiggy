@@ -37,7 +37,8 @@ public class TestDrive extends LinearOpMode {
     public static int target = 50;
     private final double ticks_in_degrees = 1440 / 180; // Ticks of the tetrix 60:1 motor in degrees (divided by 180)
     //Declares the Variables for all of our motors and servos
-    private DcMotor FrontLeftMotor,BackLeftMotor,FrontRightMotor,BackRightMotor, joint1; //Motors
+    private DcMotor FrontLeftMotor,BackLeftMotor,FrontRightMotor,BackRightMotor; //Motors
+    private  DcMotorEx pivot, slideLeft, slideRight;
     private VoltageSensor volt_prime;
     private Servo fingers,wrist,elbow;
     Gamepad currentGamepad1 = new Gamepad(), previousGamepad1 = new Gamepad(); //Gamepads used to make toggles
@@ -49,9 +50,6 @@ public class TestDrive extends LinearOpMode {
 
         //Initializing Hardware in method down below
         initHardware();
-
-        ArmClass arm = new ArmClass(hardwareMap);
-
         waitForStart();
 
         if (opModeIsActive()) {
@@ -60,8 +58,8 @@ public class TestDrive extends LinearOpMode {
                 currentGamepad1.copy(gamepad1);
 
                 drive();
-                arm.runPivot();
-                arm.runSlides();
+                runPivot();
+                runSlides();
                 claw();
 
                 ///Battery power
@@ -74,7 +72,7 @@ public class TestDrive extends LinearOpMode {
                 }
 
                 telemetry.addData("Battery%", battery);
-                telemetry.addData("motor power", joint1.getPower());
+
                 initTelemetry();
                 telemetry.update();
 
@@ -89,11 +87,15 @@ public class TestDrive extends LinearOpMode {
             BackLeftMotor = hardwareMap.get(DcMotor.class, "bl");
             FrontRightMotor = hardwareMap.get(DcMotor.class, "fr");
             BackRightMotor = hardwareMap.get(DcMotor.class, "br");
-            joint1 = hardwareMap.get(DcMotorEx.class, "joint1");
+            pivot = hardwareMap.get(DcMotorEx.class,"pivot");
+            slideRight = hardwareMap.get(DcMotorEx.class,"slideRight");
+            slideLeft = hardwareMap.get(DcMotorEx.class,"slideLeft");
             fingers = hardwareMap.get(Servo.class,"fingers");
             wrist = hardwareMap.get(Servo.class,"wrist");
             elbow = hardwareMap.get(Servo.class,"elbow");
 
+            slideRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            slideLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
             FrontRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
             BackRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -110,7 +112,7 @@ public class TestDrive extends LinearOpMode {
 
             BatteryClass battery = new BatteryClass(hardwareMap);
             telemetry.addData("Battery", battery.getBatteryPercent());
-            telemetry.addData("Joint 1 pos", joint1.getCurrentPosition());
+
 
             telemetry.addData("Toggle",Xtoggle);
             telemetry.addData("Toggle",Rtoggle);
@@ -202,7 +204,7 @@ public class TestDrive extends LinearOpMode {
         private void claw(){
 
 
-            if(currentGamepad2.a && !previousGamepad2.a){
+            if(currentGamepad2.left_stick_button && !previousGamepad2.left_stick_button){
                 directControl = !directControl;
             }
 
@@ -217,9 +219,9 @@ public class TestDrive extends LinearOpMode {
 
                 if (gamepad2.b) {
                     wrist.setPosition(0);
-                } else if (gamepad2.x) {
-                    wrist.setPosition(1);
                 } else if (gamepad2.y) {
+                    wrist.setPosition(1);
+                } else if (gamepad2.x) {
                     wrist.setPosition(0.5);
 
                 }
@@ -232,17 +234,28 @@ public class TestDrive extends LinearOpMode {
 
             }
             else {
+                if (gamepad2.left_bumper) {
+                    fingers.setPosition(0);
+                } else if (gamepad2.right_bumper) {
+                    fingers.setPosition(1);
+                }
+                if (gamepad2.b) {
+                    wrist.setPosition(0);
+                } else if (gamepad2.x) {
+                    wrist.setPosition(0.5);
+
+                }
                 //Set Positions---------------------------------------------------------------------------------
 
                 //Specimens
-                if (gamepad2.dpad_right) {
+                if (gamepad2.dpad_down) {
                     fingers.setPosition(1);
                     wrist.setPosition(0);
                     //arm.runSlides(0);
                     //arm.runPivot(0);
                     fingers.setPosition(0);
                     elbow.setPosition(1);
-                } else if (gamepad2.dpad_left) {
+                } else if (gamepad2.dpad_up) {
                     fingers.setPosition(1);
                     elbow.setPosition(0.5);
                     wrist.setPosition(1);
@@ -250,14 +263,14 @@ public class TestDrive extends LinearOpMode {
                     //arm.runPivot(500);
                 }
                 //Samples
-                if (gamepad2.b) {
+                if (gamepad2.a) {
                     fingers.setPosition(1);
                     wrist.setPosition(0);
                     fingers.setPosition(0);
                     //arm.runSlides(0);
                     //arm.runPivot(1000);
                     elbow.setPosition(0.3);
-                } else if (gamepad2.x){
+                } else if (gamepad2.y){
                     fingers.setPosition(1);
                     elbow.setPosition(0.5);
                     wrist.setPosition(0);
@@ -265,10 +278,61 @@ public class TestDrive extends LinearOpMode {
                     //arm.runSlides(1000);
                 }
             }
+            telemetry.addData("Direct Control",directControl);
+            telemetry.update();
 
 
 
         }
+    public void runPivot(){
+        pivot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        PIDController controller;
+        double p1 = 0.009, i1 = 0.001, d1 = 0.0005;
+
+        double f1 = 0.185;
+
+        int target1 = 425;
+        controller = new PIDController(p1,i1,d1);
+        double ticks_in_degrees = 1440/180;
+
+        controller.setPID(p1,i1,d1);
+        int armPos = pivot.getCurrentPosition();
+        double pid = controller.calculate(armPos, target1);
+        double ff = Math.cos(Math.toRadians(target1/ticks_in_degrees)) * f1;
+
+        double power = pid + ff;
+        if(gamepad2.right_stick_y <= 1.0 && gamepad2.right_stick_y != 0.0|| gamepad2.right_stick_y >= -1.0 && gamepad2.right_stick_y != 0){
+            power = gamepad2.right_stick_y * 0.5;
+            target1 = armPos;
+        }
+
+        pivot.setPower(power);
+    }
+    public void runSlides(){
+
+        PIDController controller;
+        double p1 = 0, i1 = 0, d1 = 0;
+
+        double f1 = 0;
+
+        int target1 = 425;
+        controller = new PIDController(p1,i1,d1);
+        double ticks_in_degrees = 1440/180;
+
+        controller.setPID(p1,i1,d1);
+        int armPos = slideLeft.getCurrentPosition();
+        double pid = controller.calculate(armPos, target1);
+        double ff = Math.cos(Math.toRadians(target1/ticks_in_degrees)) * f1;
+
+        double power = pid + ff;
+        if(gamepad2.right_stick_y <= 1.0 && gamepad2.right_stick_y != 0.0|| gamepad2.right_stick_y >= -1.0 && gamepad2.right_stick_y != 0){
+            power = gamepad2.right_stick_x * 0.5;
+            target1 = armPos;
+        }
+
+        slideLeft.setPower(power);
+        slideRight.setPower(power);
+    }
         }
 
 
