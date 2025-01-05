@@ -100,8 +100,25 @@ public class AutoV3 extends LinearOpMode {
         public Action elbowOpen(){return new openElbow();}
         public Action elbowClose(){return new closeElbow();}
     }
+    public class pivot{
+        private DcMotorEx pivot;
+        public pivot(HardwareMap hardwareMap){
+            pivot = hardwareMap.get(DcMotorEx.class,"pivot");
+        }
+
+        public class runPivot implements Action{
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                pivot.setPower(1);
+                return true;
+            }
+
+        }
+        public Action pivotRun(){return new runPivot();}
+    }
     public class lift{
-        int target1 = 425;
+        int target1 = 0;
 
         private final DcMotorEx slideLeft, slideRight;
         public lift(HardwareMap hardwareMap){
@@ -114,6 +131,8 @@ public class AutoV3 extends LinearOpMode {
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 slideRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 slideLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                slideRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                slideLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 PIDController controller;
                 double p1 = 0, i1 = 0, d1 = 0;
 
@@ -160,6 +179,7 @@ public class AutoV3 extends LinearOpMode {
             Pose2d initialPose = new Pose2d(24, -61, Math.toRadians(90));
             MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
             lift lift = new lift(hardwareMap);
+            pivot pivot = new pivot(hardwareMap);
             TrajectoryActionBuilder sample = drive.actionBuilder(initialPose)
                     .strafeTo(new Vector2d(8, -33))
                     .waitSeconds(1);
@@ -187,8 +207,9 @@ public class AutoV3 extends LinearOpMode {
 //Parallel Actions?
             Actions.runBlocking(
                     new ParallelAction(
-                            lift.runPID(),
-                            lift.changeTarget(270)
+                            lift.runPID()
+                            //lift.changeTarget(270),
+                            //pivot.pivotRun()
                     )
 
             );
