@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 
 @Config
@@ -21,9 +22,9 @@ public class ArmPID extends LinearOpMode {
 
 
 
-    public static double p1 = 0, i1 = 0, d1 = 0;
+    public static double p1 = 0.006, i1 = 0.001, d1 = 0.00005;
 
-    public static double f1 = 0;
+    public static double f1 = 0.004;
 
     public static int target1 = 425;
     public static double p2 = 0, i2 = 0, d2 = 0;
@@ -43,9 +44,11 @@ public class ArmPID extends LinearOpMode {
         pivot = hardwareMap.get(DcMotorEx.class,"pivot");
         slideRight = hardwareMap.get(DcMotorEx.class,"slideRight");
         slideLeft = hardwareMap.get(DcMotorEx.class,"slideLeft");
-
+        slideLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         slideRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         slideLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        slideRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        slideLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         waitForStart();
         while (opModeIsActive()){
@@ -57,21 +60,22 @@ public class ArmPID extends LinearOpMode {
             double slidePower = pid + ff;
 
             slideLeft.setPower(slidePower);
+
             slideRight.setPower(slidePower);
 
             controller2.setPID(p2,i2,d2);
-            int armPos = slideLeft.getCurrentPosition();
-            double pid2 = controller.calculate(armPos, target2);
+            int armPos = pivot.getCurrentPosition();
+            double pid2 = controller2.calculate(armPos, target2);
             double ff2 = Math.cos(Math.toRadians(target2/ticks_in_degrees)) * f2;
 
             double pivotPower = pid2 + ff2;
 
-            slideLeft.setPower(pivotPower);
+            pivot.setPower(pivotPower);
 
-            telemetry.addData("Slide Pos", slidePos);
+
+            telemetry.addData("Slide Left Pos", slidePos);
+            telemetry.addData("Slide Right Pos", slideRight.getCurrentPosition());
             telemetry.addData("Slide Target", target1);
-            telemetry.addData("pivot Pos", armPos);
-            telemetry.addData("pivot Target", target2);
             telemetry.update();
 
         }

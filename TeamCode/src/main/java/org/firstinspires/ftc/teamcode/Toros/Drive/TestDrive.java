@@ -80,212 +80,212 @@ public class TestDrive extends LinearOpMode {
         }
     }
 
-        private void initHardware () {
+    private void initHardware () {
 
-            //Motors
-            FrontLeftMotor = hardwareMap.get(DcMotor.class, "fl");
-            BackLeftMotor = hardwareMap.get(DcMotor.class, "bl");
-            FrontRightMotor = hardwareMap.get(DcMotor.class, "fr");
-            BackRightMotor = hardwareMap.get(DcMotor.class, "br");
-            pivot = hardwareMap.get(DcMotorEx.class,"pivot");
-            slideRight = hardwareMap.get(DcMotorEx.class,"slideRight");
-            slideLeft = hardwareMap.get(DcMotorEx.class,"slideLeft");
-            fingers = hardwareMap.get(Servo.class,"fingers");
-            wrist = hardwareMap.get(Servo.class,"wrist");
-            elbow = hardwareMap.get(Servo.class,"elbow");
+        //Motors
+        FrontLeftMotor = hardwareMap.get(DcMotor.class, "fl");
+        BackLeftMotor = hardwareMap.get(DcMotor.class, "bl");
+        FrontRightMotor = hardwareMap.get(DcMotor.class, "fr");
+        BackRightMotor = hardwareMap.get(DcMotor.class, "br");
+        pivot = hardwareMap.get(DcMotorEx.class,"pivot");
+        slideRight = hardwareMap.get(DcMotorEx.class,"slideRight");
+        slideLeft = hardwareMap.get(DcMotorEx.class,"slideLeft");
+        fingers = hardwareMap.get(Servo.class,"fingers");
+        wrist = hardwareMap.get(Servo.class,"wrist");
+        elbow = hardwareMap.get(Servo.class,"elbow");
 
-            slideRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            slideLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        slideRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        slideLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-            FrontRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-            BackRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-            //Zero Power Behaviors
-            FrontLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            BackLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            FrontRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            BackRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        slideRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        slideLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        FrontRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        BackRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        //Zero Power Behaviors
+        FrontLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        BackLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        FrontRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        BackRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-            volt_prime = hardwareMap.get(VoltageSensor.class, "Control Hub");
+        volt_prime = hardwareMap.get(VoltageSensor.class, "Control Hub");
+    }
+
+    private void initTelemetry () {
+
+        BatteryClass battery = new BatteryClass(hardwareMap);
+        telemetry.addData("Battery", battery.getBatteryPercent());
+        telemetry.addData("Direct Control",directControl);
+        telemetry.addData("Toggle",Xtoggle);
+        telemetry.addData("Toggle",Rtoggle);
+        telemetry.update();
+    }
+    private void drive () throws InterruptedException {
+
+
+        if(currentGamepad1.x && !previousGamepad1.x){
+            Xtoggle = !Xtoggle;
+        }
+        if(currentGamepad1.b && !previousGamepad1.b){
+            Rtoggle = !Rtoggle;
         }
 
-        private void initTelemetry () {
-
-            BatteryClass battery = new BatteryClass(hardwareMap);
-            telemetry.addData("Battery", battery.getBatteryPercent());
 
 
-            telemetry.addData("Toggle",Xtoggle);
-            telemetry.addData("Toggle",Rtoggle);
-            telemetry.update();
+
+
+
+        double x = gamepad1.left_stick_x;
+        double y = -gamepad1.left_stick_y;
+        double turn = gamepad1.right_stick_x;
+
+        if(Xtoggle){
+            x *= 0.75;
         }
-        private void drive () throws InterruptedException {
-
-
-            if(currentGamepad1.x && !previousGamepad1.x){
-                Xtoggle = !Xtoggle;
-            }
-            if(currentGamepad1.b && !previousGamepad1.b){
-                Rtoggle = !Rtoggle;
-            }
-
-
-
-
-
-
-            double x = gamepad1.left_stick_x;
-            double y = -gamepad1.left_stick_y;
-            double turn = gamepad1.right_stick_x;
-
-            if(Xtoggle){
-                x *= 0.75;
-            }
-            else{
-                x*=1;
-            }
-            if(Rtoggle){
-                turn *= 0.75;
-            }
-            else{
-                turn*=1;
-            }
-
-
-
-
-            //Drive variables used in the calculations to run our motors
-            double theta = Math.atan2(y, x);
-            double power = Math.hypot(x, y);
-            double sin = Math.sin(theta - Math.PI / 4);
-            double cos = Math.cos(theta - Math.PI / 4);
-            double max = Math.max(Math.abs(sin), Math.abs(cos));
-
-            /**
-             In basics this is taking the x and y of the left stick making them into an angle
-             with the power being the hypot which is the square root of the sum of squares of the inputs
-             more info here https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/hypot
-             then takes the sin and cos of the angle making sure to convert to radians. It then creates a max
-             using the absolute value of the sin and cos.
-
-             The idea is that where you are going is angle theta with each wheel being a vector and when combined make the target direction when rotated 45 degrees
-
-             Found on YT www.youtube.com/watch?v=gnSW2QpkGXQ which is a video about coding for mecanum drive wheels
-             */
-
-
-            //Calculations for our drive motors
-
-            double fl = (power * cos / max + turn);
-            double fr = (power * sin / max - turn);
-            double bl = (power * sin / max + turn);
-            double br = (power * cos / max - turn);
-
-            /**
-             In continuation the power is then calculated with the angles multiplied by the sin or cos divided the difference or sum of the max and turn
-             */
-
-            //If statement below is to make sure one motor does not exceed the power limit making it scale down
-
-            if ((power + Math.abs(turn)) > 1) {
-                fl /= power + Math.abs(turn);
-                fr /= power + Math.abs(turn);
-                bl /= power + Math.abs(turn);
-                br /= power + Math.abs(turn);
-            }
-
-
-
-            //Motor Drive
-            FrontLeftMotor.setPower(fl);
-            FrontRightMotor.setPower(fr);
-            BackLeftMotor.setPower(bl);
-            BackRightMotor.setPower(br);
+        else{
+            x*=1;
         }
-        private void claw(){
+        if(Rtoggle){
+            turn *= 0.75;
+        }
+        else{
+            turn*=1;
+        }
 
 
-            if(currentGamepad2.left_stick_button && !previousGamepad2.left_stick_button){
-                directControl = !directControl;
+
+
+        //Drive variables used in the calculations to run our motors
+        double theta = Math.atan2(y, x);
+        double power = Math.hypot(x, y);
+        double sin = Math.sin(theta - Math.PI / 4);
+        double cos = Math.cos(theta - Math.PI / 4);
+        double max = Math.max(Math.abs(sin), Math.abs(cos));
+
+        /**
+         In basics this is taking the x and y of the left stick making them into an angle
+         with the power being the hypot which is the square root of the sum of squares of the inputs
+         more info here https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/hypot
+         then takes the sin and cos of the angle making sure to convert to radians. It then creates a max
+         using the absolute value of the sin and cos.
+
+         The idea is that where you are going is angle theta with each wheel being a vector and when combined make the target direction when rotated 45 degrees
+
+         Found on YT www.youtube.com/watch?v=gnSW2QpkGXQ which is a video about coding for mecanum drive wheels
+         */
+
+
+        //Calculations for our drive motors
+
+        double fl = (power * cos / max + turn);
+        double fr = (power * sin / max - turn);
+        double bl = (power * sin / max + turn);
+        double br = (power * cos / max - turn);
+
+        /**
+         In continuation the power is then calculated with the angles multiplied by the sin or cos divided the difference or sum of the max and turn
+         */
+
+        //If statement below is to make sure one motor does not exceed the power limit making it scale down
+
+        if ((power + Math.abs(turn)) > 1) {
+            fl /= power + Math.abs(turn);
+            fr /= power + Math.abs(turn);
+            bl /= power + Math.abs(turn);
+            br /= power + Math.abs(turn);
+        }
+
+
+
+        //Motor Drive
+        FrontLeftMotor.setPower(fl);
+        FrontRightMotor.setPower(fr);
+        BackLeftMotor.setPower(bl);
+        BackRightMotor.setPower(br);
+    }
+    private void claw(){
+
+
+        if(currentGamepad2.left_stick_button && !previousGamepad2.left_stick_button){
+            directControl = !directControl;
+        }
+
+
+
+        if(directControl){
+            if (gamepad2.left_bumper) {
+                fingers.setPosition(0);
+            } else if (gamepad2.right_bumper) {
+                fingers.setPosition(1);
+            }//keep finger control always
+
+            if (gamepad2.b) {
+                wrist.setPosition(0);
+            } else if (gamepad2.y) {
+                wrist.setPosition(1);
+            } else if (gamepad2.x) {
+                wrist.setPosition(0.5);
+
             }
 
-
-
-            if(directControl){
-                if (gamepad2.left_bumper) {
-                    fingers.setPosition(0);
-                } else if (gamepad2.right_bumper) {
-                    fingers.setPosition(1);
-                }//keep finger control always
-
-                if (gamepad2.b) {
-                    wrist.setPosition(0);
-                } else if (gamepad2.y) {
-                    wrist.setPosition(1);
-                } else if (gamepad2.x) {
-                    wrist.setPosition(0.5);
-
-                }
-
-                if (gamepad2.dpad_down) {
-                    elbow.setPosition(1);
-                } else if (gamepad2.dpad_up) {
-                    elbow.setPosition(0);
-                }
-
+            if (gamepad2.dpad_down) {
+                elbow.setPosition(1);
+            } else if (gamepad2.dpad_up) {
+                elbow.setPosition(0);
             }
-            else {
-                if (gamepad2.left_bumper) {
-                    fingers.setPosition(0);
-                } else if (gamepad2.right_bumper) {
-                    fingers.setPosition(1);
-                }
-                if (gamepad2.b) {
-                    wrist.setPosition(0);
-                } else if (gamepad2.x) {
-                    wrist.setPosition(0.5);
-
-                }
-                //Set Positions---------------------------------------------------------------------------------
-
-                //Specimens
-                if (gamepad2.dpad_down) {
-                    fingers.setPosition(1);
-                    wrist.setPosition(0);
-                    //arm.runSlides(0);
-                    //arm.runPivot(0);
-                    fingers.setPosition(0);
-                    elbow.setPosition(1);
-                } else if (gamepad2.dpad_up) {
-                    fingers.setPosition(1);
-                    elbow.setPosition(0.5);
-                    wrist.setPosition(1);
-                    //arm.runSlides(500);
-                    //arm.runPivot(500);
-                }
-                //Samples
-                if (gamepad2.a) {
-                    fingers.setPosition(1);
-                    wrist.setPosition(0);
-                    fingers.setPosition(0);
-                    //arm.runSlides(0);
-                    //arm.runPivot(1000);
-                    elbow.setPosition(0.3);
-                } else if (gamepad2.y){
-                    fingers.setPosition(1);
-                    elbow.setPosition(0.5);
-                    wrist.setPosition(0);
-                    //arm.runPivot(500);
-                    //arm.runSlides(1000);
-                }
-            }
-            telemetry.addData("Direct Control",directControl);
-            telemetry.update();
-
-
 
         }
+        else {
+            if (gamepad2.left_bumper) {
+                fingers.setPosition(0);
+            } else if (gamepad2.right_bumper) {
+                fingers.setPosition(1);
+            }
+            if (gamepad2.b) {
+                wrist.setPosition(0);
+            } else if (gamepad2.x) {
+                wrist.setPosition(0.5);
+
+            }
+            //Set Positions---------------------------------------------------------------------------------
+
+            //Specimens
+            if (gamepad2.dpad_down) {
+                fingers.setPosition(1);
+                wrist.setPosition(0);
+                //arm.runSlides(0);
+                //arm.runPivot(0);
+                fingers.setPosition(0);
+                elbow.setPosition(1);
+            } else if (gamepad2.dpad_up) {
+                fingers.setPosition(1);
+                elbow.setPosition(0.5);
+                wrist.setPosition(1);
+                //arm.runSlides(500);
+                //arm.runPivot(500);
+            }
+            //Samples
+            if (gamepad2.a) {
+                fingers.setPosition(1);
+                wrist.setPosition(0);
+                fingers.setPosition(0);
+                //arm.runSlides(0);
+                //arm.runPivot(1000);
+                elbow.setPosition(0.3);
+            } else if (gamepad2.y){
+                fingers.setPosition(1);
+                elbow.setPosition(0.5);
+                wrist.setPosition(0);
+                //arm.runPivot(500);
+                //arm.runSlides(1000);
+            }
+        }
+
+
+
+
+    }
     public void runPivot(){
-        pivot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
         PIDController controller;
         double p1 = 0.009, i1 = 0.001, d1 = 0.0005;
 
@@ -311,11 +311,11 @@ public class TestDrive extends LinearOpMode {
     public void runSlides(){
 
         PIDController controller;
-        double p1 = 0, i1 = 0, d1 = 0;
+        double p1 = 0.006, i1 = 0.01, d1 = 0.00005;
 
-        double f1 = 0;
+        double f1 = 0.005;
 
-        int target1 = 425;
+        int target1 = -425;
         controller = new PIDController(p1,i1,d1);
         double ticks_in_degrees = 1440/180;
 
@@ -333,7 +333,7 @@ public class TestDrive extends LinearOpMode {
         slideLeft.setPower(power);
         slideRight.setPower(power);
     }
-        }
+}
 
 
 //:3
