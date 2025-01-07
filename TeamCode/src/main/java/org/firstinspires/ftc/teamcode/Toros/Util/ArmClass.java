@@ -40,28 +40,33 @@ public class ArmClass {
         }
 
         pivot.setPower(power);
+
+        if ((target == 0) && (pivot.getCurrentPosition() < 10)) {
+            pivot.setPower(0);
+            pivot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        }
     }
     public void runSlides(){
-        slideRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        slideLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        slideRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//NOOOOOOOOOOOOOOOOOOO
+        slideLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);// Do NOT use relative coordinates
         PIDController controller;
         double p1 = 0, i1 = 0, d1 = 0;
 
         double f1 = 0;
 
-        int target1 = 425;
+        int target2 = 425;
         controller = new PIDController(p1,i1,d1);
         double ticks_in_degrees = 1440/180;
 
         controller.setPID(p1,i1,d1);
         int armPos = slideLeft.getCurrentPosition();
-        double pid = controller.calculate(armPos, target1);
-        double ff = Math.cos(Math.toRadians(target1/ticks_in_degrees)) * f1;
+        double pid = controller.calculate(armPos, target2);
+        double ff = Math.cos(Math.toRadians(target2/ticks_in_degrees)) * f1;
 
         double power = pid + ff;
         if(gamepad2.right_stick_y <= 1.0 && gamepad2.right_stick_y != 0.0|| gamepad2.right_stick_y >= -1.0 && gamepad2.right_stick_y != 0){
             power = gamepad2.right_stick_y * 0.5;
-            target1 = armPos;
+            target2 = armPos;
         }
 
         slideLeft.setPower(power);

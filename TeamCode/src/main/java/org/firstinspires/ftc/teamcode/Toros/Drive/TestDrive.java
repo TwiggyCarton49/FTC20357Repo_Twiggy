@@ -36,8 +36,9 @@ public class TestDrive extends LinearOpMode {
 
     public static int target = 50;
     private final double ticks_in_degrees = 1440 / 180; // Ticks of the tetrix 60:1 motor in degrees (divided by 180)
+
     //Declares the Variables for all of our motors and servos
-    private DcMotor FrontLeftMotor,BackLeftMotor,FrontRightMotor,BackRightMotor, joint1; //Motors
+    private DcMotor FrontLeftMotor,BackLeftMotor,FrontRightMotor,BackRightMotor, pivot; //Motors
     private VoltageSensor volt_prime;
     private Servo fingers,wrist,elbow;
     Gamepad currentGamepad1 = new Gamepad(), previousGamepad1 = new Gamepad(); //Gamepads used to make toggles
@@ -74,7 +75,7 @@ public class TestDrive extends LinearOpMode {
                 }
 
                 telemetry.addData("Battery%", battery);
-                telemetry.addData("motor power", joint1.getPower());
+                telemetry.addData("motor power", pivot.getPower());
                 initTelemetry();
                 telemetry.update();
 
@@ -89,7 +90,7 @@ public class TestDrive extends LinearOpMode {
             BackLeftMotor = hardwareMap.get(DcMotor.class, "bl");
             FrontRightMotor = hardwareMap.get(DcMotor.class, "fr");
             BackRightMotor = hardwareMap.get(DcMotor.class, "br");
-            joint1 = hardwareMap.get(DcMotorEx.class, "joint1");
+            pivot = hardwareMap.get(DcMotorEx.class, "pivot");
             fingers = hardwareMap.get(Servo.class,"fingers");
             wrist = hardwareMap.get(Servo.class,"wrist");
             elbow = hardwareMap.get(Servo.class,"elbow");
@@ -110,7 +111,7 @@ public class TestDrive extends LinearOpMode {
 
             BatteryClass battery = new BatteryClass(hardwareMap);
             telemetry.addData("Battery", battery.getBatteryPercent());
-            telemetry.addData("Joint 1 pos", joint1.getCurrentPosition());
+            telemetry.addData("Joint 1 pos", pivot.getCurrentPosition());
 
             telemetry.addData("Toggle",Xtoggle);
             telemetry.addData("Toggle",Rtoggle);
@@ -125,8 +126,6 @@ public class TestDrive extends LinearOpMode {
             if(currentGamepad1.b && !previousGamepad1.b){
                 Rtoggle = !Rtoggle;
             }
-
-
 
 
 
@@ -200,6 +199,23 @@ public class TestDrive extends LinearOpMode {
             BackRightMotor.setPower(br);
         }
         private void claw(){
+            if (gamepad2.left_bumper) {
+                fingers.setPosition(0);
+            } else if (gamepad2.right_bumper) {
+                fingers.setPosition(1);
+            }
+
+            if (gamepad2.b) {
+                wrist.setPosition(0);
+            } else if (gamepad2.x) {
+                wrist.setPosition(1);
+            }
+
+            if (gamepad2.a) {
+                elbow.setPosition(1);
+            } else if (gamepad2.y) {
+                elbow.setPosition(0);
+            }
 
         }
     }
